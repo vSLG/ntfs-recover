@@ -24,8 +24,10 @@ class NTFSException : public std::exception {
 
 class OpenException : public NTFSException {
   public:
-    OpenException(std::string dev_path)
-        : NTFSException("could not open device " + dev_path){};
+    OpenException(std::string dev_path, std::string reason = "")
+        : NTFSException("could not open device " + dev_path + reason != ""
+                            ? ". Reason: " + reason
+                            : ""){};
 };
 }; // namespace exception
 }; // namespace nf
