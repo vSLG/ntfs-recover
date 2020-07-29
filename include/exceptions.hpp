@@ -2,32 +2,23 @@
 
 #pragma once
 
-#include <exception>
+#include <stdexcept>
 #include <string>
 
 namespace nf {
 namespace exception {
-class NTFSException : public std::exception {
-  private:
-    const char *_what;
-
+class NTFSException : public std::runtime_error {
   public:
-    NTFSException(std::string what) {
-        what        = "NTFS Error: " + what;
-        this->_what = what.c_str();
-    }
-
-    const char *what() const throw() {
-        return this->_what;
+    explicit NTFSException(std::string what)
+        : std::runtime_error("NTFS Error: " + what) {
     }
 };
 
 class OpenException : public NTFSException {
   public:
     OpenException(std::string dev_path, std::string reason = "")
-        : NTFSException("could not open device " + dev_path + reason != ""
-                            ? ". Reason: " + reason
-                            : ""){};
+        : NTFSException(("could not open device " + dev_path) +
+                        (reason != "" ? ". Reason: " + reason : "")){};
 };
 }; // namespace exception
 }; // namespace nf

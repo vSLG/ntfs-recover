@@ -11,9 +11,7 @@ class IOBase {
     enum OpenMode { READ = 1, WRITE };
 
     // XXX: Not good to use fstream on Windows
-    virtual std::fstream *open(std::string path,
-                               OpenMode    mode = OpenMode::READ) = 0;
-
-    virtual bool is_mounted(std::string path) = 0;
+    static std::fstream *open(std::string path, OpenMode mode = OpenMode::READ);
+    static bool          is_mounted(std::string path);
 };
 }; // namespace nf

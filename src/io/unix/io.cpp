@@ -8,7 +8,7 @@
 using namespace nf;
 
 std::fstream *IO::open(std::string path, OpenMode mode) {
-    std::fstream *          dev;
+    std::fstream *          dev = new std::fstream();
     std::ios_base::openmode flags;
 
     if (is_mounted(path))

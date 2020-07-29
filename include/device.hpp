@@ -7,7 +7,8 @@
 namespace nf {
 class NTFSDevice {
   private:
-    std::fstream _dev;
+    std::fstream *_dev = nullptr;
+    std::string   _dev_path;
 
   public:
     NTFSDevice(std::string dev_path);
@@ -15,5 +16,8 @@ class NTFSDevice {
 
     int open(IOBase::OpenMode mode = IOBase::OpenMode::READ);
     int close();
+
+    // Getters and setters
+    std::string dev_path();
 };
 } // namespace nf

@@ -26,7 +26,7 @@ BUILD_CXXFLAGS := -g -Wall -O2 -std=c++17 $(CXXFLAGS)
 export BUILD_CFLAGS BUILD_CXXFLAGS INCLUDE_DIR SHELL CC AR CXX AR OBJCOPY
 
 link_libraries :=
-build-dirs     :=
+build-dirs     := src
 final-builtin  := $(objtree)/built-in.a
 bin-name 	   := $(bintree)/main
 
