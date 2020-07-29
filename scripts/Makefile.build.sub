@@ -1,0 +1,81 @@
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
+## This file builds targets.
+## Should be used with $(MAKE) $(build)=directory-to-build
+## else it is likely to fail.
+
+# Default rule
+PHONY := __build
+__build:
+
+# Initialize variables used by included files.
+# obj-o holds objects to be built, in relative path.
+obj-o    :=
+res 	 :=
+res-o    :=
+cflags   :=
+cxxflags :=
+subdir-o :=
+
+include scripts/Makefile.include.sub
+include $(dir)/Makefile
+
+# Where objects will be stored.
+objdir := $(objtree)/$(dir)
+
+# Check if there is any "value/"
+subdir-o += $(patsubst %/, %, $(filter %/, $(obj-o)))
+subdir-o := $(sort $(subdir-o))
+
+# Transform any "value/" to "value/built-in.a" 
+obj-o := $(patsubst %/, %/built-in.a, $(obj-o))
+
+# Point %.o targets to its respective obj directory
+obj-o := $(addprefix $(objdir)/, $(obj-o))
+
+res := $(addprefix $(dir)/, $(res))
+
+# Do not use $(objdir) here as this Makefile will descent into it
+# in the source tree, not object tree.
+subdir-o := $(addprefix $(dir)/, $(subdir-o))
+
+ifneq ($(res),)
+	res-o := $(objdir)/res.o
+endif
+
+# Final C flags to use with $(CC) command.
+c_flags   = $(strip $(BUILD_CFLAGS) $(INCLUDE_DIR) $(cflags))
+cxx_flags = $(strip $(BUILD_CXXFLAGS) $(INCLUDE_DIR) $(cxxflags))
+
+builtin-target := $(objdir)/built-in.a
+
+$(objdir)/%.o: $(dir)/%.c
+	$(CC) $(c_flags) -c -o $@ $<
+
+$(objdir)/%.o: $(dir)/%.cpp
+	$(CXX) $(cxx_flags) -c -o $@ $<
+
+$(res-o): $(res)
+	$(LD) -r -b binary -o $@ $(real-prereqs)
+
+# Needed by $(builtin-target)
+$(objdir)/%/built-in.a: $(dir)/% ;
+
+# Archive everything needed
+$(builtin-target): $(obj-o) $(res-o)
+	$(AR) cDPrTSs $@ $(real-prereqs)
+
+# Descend into other subdirectories
+PHONY += $(subdir-o)
+$(subdir-o):
+	@$(MAKE) $(build)=$@
+
+__build: $(builtin-target) $(subdir-o)
+	@:
+
+$(shell mkdir -p $(objdir))
+
+PHONY += FORCE
+FORCE:
+
+.PHONY: $(PHONY)
