@@ -14,14 +14,9 @@ int main(int argc, char *argv[]) {
 
     Log::log::reporting_level() = Log::DEBUG;
 
-    D << "kk eae debug";
-    I << "kk eae info";
-    W << "kk eae warn";
-    E << "kk eae err";
-    C << "kk eae crit";
-
     NTFSDevice *dev = new NTFSDevice("/dev/sda2");
-    dev->open();
+    if (dev->open())
+        return 1;
 
     return 0;
 }

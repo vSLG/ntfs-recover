@@ -2,6 +2,7 @@
 
 #include <device.hpp>
 #include <io.hpp>
+#include <log.hpp>
 
 using namespace nf;
 
@@ -17,7 +18,13 @@ int NTFSDevice::open(IOBase::OpenMode mode) {
     if (this->_dev)
         return -1;
 
+    D << "Trying to open " << this->_dev_path << "...";
     this->_dev = IO::open(this->_dev_path, mode);
+
+    if (!this->_dev)
+        return 1;
+
+    D << this->_dev_path << " opened successfully";
     return 0;
 }
 

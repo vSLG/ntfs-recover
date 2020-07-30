@@ -56,7 +56,7 @@ std::ostringstream &Logger<OutputPolicy>::get(Level level) {
 
     this->os << "- " << timestamp;
     this->os << " " << this->level_str[level];
-    this->os << ":\t";
+    this->os << ": " << std::string(8 - level_str[level].length(), ' ');
 
     this->message_level = level;
     return os;
@@ -80,6 +80,6 @@ typedef Logger<StreamPolicy> log;
 #define D LOG(Log::DEBUG)
 #define I LOG(Log::INFO)
 #define W LOG(Log::WARNING)
-#define E LOG(Log::ERROR)
-#define C LOG(Log::CRITICAL)
+#define E LOG(Log::ERROR) << "(" << __FILE__ << ":" << __LINE__ << ") "
+#define C LOG(Log::CRITICAL) << "(" << __FILE__ << ":" << __LINE__ << ") "
 } // namespace nf::Log

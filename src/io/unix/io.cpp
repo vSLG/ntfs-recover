@@ -1,30 +1,40 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+#include <filesystem>
 #include <mntent.h>
 
 #include <exceptions.hpp>
 #include <io/unix_io.hpp>
+#include <log.hpp>
 
 using namespace nf;
 
 std::fstream *IO::open(std::string path, OpenMode mode) {
-    std::fstream *          dev = new std::fstream();
+    std::fstream *          dev = nullptr;
     std::ios_base::openmode flags;
 
-    if (is_mounted(path))
-        throw exception::OpenException(path,
-                                       "device is mounted, refusing to open");
+    try {
+        if (!std::filesystem::exists(path))
+            throw exception::FileNotFoundException(path);
 
-    if (mode & OpenMode::READ)
-        flags |= std::ios::in;
-    if (mode & OpenMode::WRITE)
-        flags |= std::ios::out;
+        if (IO::is_mounted(path))
+            throw exception::OpenException(
+                path, "device is mounted, refusing to open");
 
-    flags |= std::ios::binary;
-    dev->open(path, flags);
+        if (mode & OpenMode::READ)
+            flags |= std::ios::in;
+        if (mode & OpenMode::WRITE)
+            flags |= std::ios::out;
 
-    if (dev->fail() || !dev->is_open())
-        throw exception::OpenException(path);
+        flags |= std::ios::binary;
+        dev = new std::fstream(path, flags);
+
+        if (dev->fail() || !dev->is_open())
+            throw exception::OpenException(path, "permission denied");
+    } catch (const exception::NTFSException &e) {
+        C << e.what();
+        return nullptr;
+    }
 
     return dev;
 }
