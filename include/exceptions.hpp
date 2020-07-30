@@ -16,7 +16,7 @@ class NTFSException : public std::runtime_error {
 
 class OpenException : public NTFSException {
   public:
-    OpenException(std::string dev_path, std::string reason = "")
+    explicit OpenException(std::string dev_path, std::string reason = "")
         : NTFSException(("could not open device " + dev_path) +
                         (reason != "" ? ". Reason: " + reason : "")){};
 };
