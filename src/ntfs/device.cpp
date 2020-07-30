@@ -5,17 +5,17 @@
 #include <ntfs/device.hpp>
 #include <ntfs/layout.hpp>
 
-using namespace nf;
+using namespace nf::NTFS;
 
-NTFSDevice::NTFSDevice(std::string dev_path) {
+Device::Device(std::string dev_path) {
     this->_dev_path = dev_path;
 }
 
-NTFSDevice::~NTFSDevice() {
+Device::~Device() {
     this->close();
 }
 
-int NTFSDevice::open(IOBase::OpenMode mode) {
+int Device::open(IOBase::OpenMode mode) {
     if (this->_dev)
         return -1;
 
@@ -28,7 +28,7 @@ int NTFSDevice::open(IOBase::OpenMode mode) {
     return 0;
 }
 
-int NTFSDevice::close() {
+int Device::close() {
     fclose(this->_dev);
     return 0;
 }
@@ -36,7 +36,7 @@ int NTFSDevice::close() {
 /*
  * Read `size` bytes from disk.
  */
-char *NTFSDevice::read(uint32_t size) {
+char *Device::read(uint32_t size) {
     if (!this->_dev)
         return nullptr;
 
@@ -49,84 +49,48 @@ char *NTFSDevice::read(uint32_t size) {
 /*
  * Read `quant` sectors from disk.
  */
-char *NTFSDevice::read_sectors(uint32_t quant) {
-    return this->read(quant * this->_sector_size);
+char *Device::read_sectors(uint32_t quant) {
+    return this->read(quant * this->nbs->bpb.bps);
 }
 
 /*
  * Read first sector and parse partition information.
  */
-int NTFSDevice::load_header() {
-    NTFS::nbs_t *nbs = nullptr;
+int Device::load_header() {
+    nbs_t *nbs = nullptr;
 
     // Return pointer to begin just in case
     fseeko64(this->_dev, 0, SEEK_SET);
 
-    if (!(nbs = (NTFS::nbs_t *) this->read_sectors(1))) {
+    if (!(nbs = (nbs_t *) this->read_sectors(1))) {
         E << "Could not read first sector of the partition, unable to load "
              "partition info.";
         return -1;
     }
 
-    // ------------------------------------------------------------------------
-    // Check if partition has valid NTFS signature.
-    if (NTFS::NTFSMagic != (char *) nbs->oem) {
-        W << "This partition does not seem to be NTFS or it is corrupt.";
-        W << "Partition registered OEM: " << nbs->oem;
-    }
+    D << "Reported partition OEM: '" << nbs->oem << "'";
 
-    // ------------------------------------------------------------------------
-    // Check if reported bytes per sector is valid
-    if ((nbs->bpb.bps != 0) && ((nbs->bpb.bps & (nbs->bpb.bps - 1)) == 0)) {
-        this->_sector_size = nbs->bpb.bps;
+    int warnings = 0;
+    warnings += this->check_signature(nbs);
+    warnings += this->check_sector_size(nbs);
+    warnings += this->check_partition_size(nbs);
+    warnings += this->check_mtf(nbs);
+
+    if (warnings) {
+        I << "Generated " << warnings << " warnings during boot sector check.";
     } else {
-        W << "Wrong sector size reported, guessing 512.";
+        I << "Boot sector check OK.";
     }
-
-    // ------------------------------------------------------------------------
-    // Check if reported partition size is beyound our seek capability.
-    // This may sign NBS is corrupt or outdated even if FS sign is valid.
-    size_t current = ftello64(this->_dev);
-    fseeko64(this->_dev, 0, SEEK_END);
-    size_t bytes_detected = ftello64(this->_dev) - 512l;
-    fseeko64(this->_dev, current, SEEK_SET);
-
-    if (bytes_detected < this->_sector_size * nbs->bpb.ts) {
-        W << "Partition size may be wrong. Read size: "
-          << this->_sector_size * nbs->bpb.ts
-          << " bytes; detected size: " << bytes_detected << " bytes.";
-    }
-
-    // ------------------------------------------------------------------------
-    // Check if MTF cluster is within seek range
-    if (nbs->ntfs_header.mtf >
-        bytes_detected * this->_sector_size * nbs->bpb.spc) {
-        W << "Reported $MTF cluster outside read bounds.";
-    }
-
-    if (nbs->ntfs_header.mtf2 >
-        bytes_detected * this->_sector_size * nbs->bpb.spc) {
-        W << "Reported $MTFmir cluster outside read bounds.";
-    }
-
-    D << "Partition information:";
-    D << "\tBytes per sector: " << this->_sector_size;
-    D << "\tTotal sectors: " << nbs->bpb.ts;
-    D << "\tApparent size: " << nbs->bpb.bps * nbs->bpb.ts / 1024.F / 1024.F
-      << " MiB";
-    D << "\t----------------------------------";
-    D << "\tMTF cluster: " << nbs->ntfs_header.mtf;
-    D << "\tMTFmir cluster: " << nbs->ntfs_header.mtf2;
 
     return 0;
 }
 
 // Getters and setters
 
-std::string NTFSDevice::dev_path() {
+std::string Device::dev_path() {
     return this->_dev_path;
 }
 
-uint16_t NTFSDevice::sector_size() {
-    return this->_sector_size;
+uint16_t Device::sector_size() {
+    return this->nbs->bpb.bps;
 }
