@@ -9,9 +9,9 @@
 
 using namespace nf;
 
-std::fstream *IO::open(std::string path, OpenMode mode) {
-    std::fstream *          dev = nullptr;
-    std::ios_base::openmode flags;
+FILE *IO::open(std::string path, OpenMode mode) {
+    FILE *      dev   = nullptr;
+    std::string flags = "";
 
     try {
         if (!std::filesystem::exists(path))
@@ -22,14 +22,15 @@ std::fstream *IO::open(std::string path, OpenMode mode) {
                 path, "device is mounted, refusing to open");
 
         if (mode & OpenMode::READ)
-            flags |= std::ios::in;
+            flags += "r";
         if (mode & OpenMode::WRITE)
-            flags |= std::ios::out;
+            flags += "w";
 
-        flags |= std::ios::binary;
-        dev = new std::fstream(path, flags);
+        flags += "b";
 
-        if (dev->fail() || !dev->is_open())
+        dev = fopen64(path.c_str(), flags.c_str());
+
+        if (!dev)
             throw exception::OpenException(path, "permission denied");
     } catch (const exception::NTFSException &e) {
         C << e.what();

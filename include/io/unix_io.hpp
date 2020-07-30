@@ -7,7 +7,7 @@
 namespace nf {
 class IO : IOBase {
   public:
-    static std::fstream *open(std::string path, OpenMode mode = OpenMode::READ);
-    static bool          is_mounted(std::string path);
+    static FILE *open(std::string path, OpenMode mode = OpenMode::READ);
+    static bool  is_mounted(std::string path);
 };
 } // namespace nf

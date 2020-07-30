@@ -6,4 +6,5 @@
 
 namespace nf::Utils {
 std::time_t time();
+std::string format(const std::string &format, ...);
 }

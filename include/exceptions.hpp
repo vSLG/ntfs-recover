@@ -23,7 +23,15 @@ class OpenException : public NTFSException {
 class FileNotFoundException : public NTFSException {
   public:
     explicit FileNotFoundException(std::string path)
-        : NTFSException("File \"" + path + "\" does not exist"){};
+        : NTFSException("file \"" + path + "\" does not exist"){};
 };
+
+namespace IO {
+class ReadException : public NTFSException {
+  public:
+    explicit ReadException(uint16_t sector)
+        : NTFSException("could not read sector " + sector){};
+};
+} // namespace IO
 }; // namespace exception
 }; // namespace nf
