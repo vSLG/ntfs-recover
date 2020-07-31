@@ -24,6 +24,8 @@ class Device {
     char *read_sectors(uint32_t quant = 1);
     int   load_header();
 
+    void dump_part_bootsector(FILE *stream = stdout);
+
     // ------------------------------------------------------------------------
     // Device checking
 
@@ -38,7 +40,7 @@ class Device {
     int check_partition_size(nbs_t *nbs);
 
     // Check whether MTF cluster is within seek range and it is valid.
-    int check_mtf(nbs_t *nbs);
+    int check_mtf_cluster(nbs_t *nbs);
 
     // ------------------------------------------------------------------------
     // Getters and setters

@@ -74,7 +74,7 @@ int Device::load_header() {
     warnings += this->check_signature(nbs);
     warnings += this->check_sector_size(nbs);
     warnings += this->check_partition_size(nbs);
-    warnings += this->check_mtf(nbs);
+    warnings += this->check_mtf_cluster(nbs);
 
     if (warnings) {
         I << "Generated " << warnings << " warnings during boot sector check.";
@@ -82,7 +82,22 @@ int Device::load_header() {
         I << "Boot sector check OK.";
     }
 
-    return 0;
+    return warnings;
+}
+
+void Device::dump_part_bootsector(FILE *stream) {
+    fprintf(stream, "Partition: %s\n", this->_dev_path.c_str());
+    fprintf(stream,
+            "\tPartition size:\t %s (%lu bytes)\n",
+            Utils::b2h(this->bpb->bps * this->bpb->ts).c_str(),
+            this->bpb->bps * this->bpb->ts);
+    fprintf(
+        stream, "\tSector size:\t %s\n", Utils::b2h(this->bpb->bps).c_str());
+    fprintf(stream,
+            "\tCluster size:\t %s\n",
+            Utils::b2h(this->bpb->bps * this->bpb->spc).c_str());
+    fprintf(stream, "\t$MTF cluster:\t 0x%.8lx\n", this->ntfs_header->mtf);
+    fprintf(stream, "\t$MTFmir cluster: 0x%.8lx\n", this->ntfs_header->mtf2);
 }
 
 // Getters and setters

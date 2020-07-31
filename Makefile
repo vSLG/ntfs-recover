@@ -58,6 +58,6 @@ clean:
 
 test-image:
 	-dd if=/dev/null of=test.img bs=4M seek=16 >/dev/null 2>&1
-	-mkfs.ntfs -FQ test.img >/dev/null 2>&1
+	-mkfs.ntfs -FQL "ntfs-recover" test.img >/dev/null 2>&1
 
 .PHONY: $(PHONY)

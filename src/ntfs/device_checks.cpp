@@ -68,7 +68,7 @@ int Device::check_partition_size(nbs_t *nbs) {
 /*
  * Check whether MTF cluster is within seek range and it is valid.
  */
-int Device::check_mtf(nbs_t *nbs) {
+int Device::check_mtf_cluster(nbs_t *nbs) {
     int      warns          = 0;
     uint64_t total_clusters = this->bpb->ts / this->bpb->spc;
 

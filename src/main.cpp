@@ -22,5 +22,7 @@ int main(int argc, char *argv[]) {
     if (dev->load_header())
         return 1;
 
+    dev->dump_part_bootsector();
+
     return 0;
 }
