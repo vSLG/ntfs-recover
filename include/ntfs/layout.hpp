@@ -33,14 +33,14 @@ static_assert(sizeof(bpb_t) == 37);
  * NTFS Header structure.
  */
 typedef struct __attribute__((__packed__)) ntfs_header {
-    uint64_t mtf  = 0; // cluster for $MTF
-    uint64_t mtf2 = 0; // cluster for $MTFmir
-    char     cpr  = 0; // clusters per record
-    uint8_t  nu2[3];   // not used
-    char     cpib = 0; // clusters per index buffer
-    uint8_t  nu3[3];   // not used
-    uint64_t sn;       // serial number
-    uint32_t nu4;      // not used
+    uint64_t mtf  = 0;    // cluster for $MTF
+    uint64_t mtf2 = 0;    // cluster for $MTFmir
+    char     cpr  = 0xf6; // clusters per record, 0xf6 on most cases
+    uint8_t  nu2[3];      // not used
+    char     cpib = 0;    // clusters per index buffer
+    uint8_t  nu3[3];      // not used
+    uint64_t sn;          // serial number
+    uint32_t nu4;         // not used
 } ntfs_header_t;
 static_assert(sizeof(ntfs_header_t) == 36);
 

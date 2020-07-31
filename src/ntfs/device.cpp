@@ -102,6 +102,8 @@ void Device::dump_part_bootsector(FILE *stream) {
     fprintf(stream,
             "\tCluster size:\t %s\n",
             Utils::b2h(this->bpb->bps * this->bpb->spc).c_str());
+    fprintf(
+        stream, "\tTotal clusters:\t %lu\n", this->bpb->ts / this->bpb->spc);
     fprintf(stream, "\t$MTF cluster:\t 0x%.8lx\n", this->ntfs_header->mtf);
     fprintf(stream, "\t$MTFmir cluster: 0x%.8lx\n", this->ntfs_header->mtf2);
 }
