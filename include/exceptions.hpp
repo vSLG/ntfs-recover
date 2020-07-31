@@ -5,19 +5,12 @@
 #include <stdexcept>
 #include <string>
 
-namespace nf {
-namespace exception {
+namespace nf::exception {
 class NTFSException : public std::runtime_error {
   public:
-    explicit NTFSException(std::string what)
-        : std::runtime_error("NTFS Error: " + what){};
-};
-
-class OpenException : public NTFSException {
-  public:
-    explicit OpenException(std::string dev_path, std::string reason = "")
-        : NTFSException(("could not open device " + dev_path) +
-                        (reason != "" ? ". Reason: " + reason : "")){};
+    explicit NTFSException(const std::string &what,
+                           const std::string &prefix = "NTFS Error")
+        : std::runtime_error(prefix + ": " + what){};
 };
 
 class FileNotFoundException : public NTFSException {
@@ -27,11 +20,23 @@ class FileNotFoundException : public NTFSException {
 };
 
 namespace IO {
-class ReadException : public NTFSException {
+class IOException : public NTFSException {
+  public:
+    explicit IOException(const std::string &what)
+        : NTFSException(what, "IO Error"){};
+};
+
+class OpenException : public IOException {
+  public:
+    explicit OpenException(std::string dev_path, std::string reason = "")
+        : IOException(("could not open device " + dev_path + ". Reason: ") +
+                      (reason != "" ? reason : strerror(errno))){};
+};
+
+class ReadException : public IOException {
   public:
     explicit ReadException(uint16_t sector)
-        : NTFSException("could not read sector " + sector){};
+        : IOException("could not read sector " + sector){};
 };
 } // namespace IO
-}; // namespace exception
-}; // namespace nf
+}; // namespace nf::exception

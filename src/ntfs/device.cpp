@@ -29,7 +29,9 @@ int Device::open(IOBase::OpenMode mode) {
 }
 
 int Device::close() {
+    // TODO: return
     fclose(this->_dev);
+    free(this->_dev);
     return 0;
 }
 
