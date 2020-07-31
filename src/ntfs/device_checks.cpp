@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+/*
+ * implementation of device consistency checks.
+ */
+
 #include <log.hpp>
 #include <ntfs/device.hpp>
 #include <ntfs/layout.hpp>

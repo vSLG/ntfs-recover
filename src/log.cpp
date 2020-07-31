@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+/*
+ * Logging utility.
+ */
+
 #include <log.hpp>
 
 using namespace nf::Log;

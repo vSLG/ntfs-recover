@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+/*
+ * Misc. helpers.
+ */
+
 #pragma once
 
 #include <ctime>

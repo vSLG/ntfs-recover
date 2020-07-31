@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+/*
+ * Implementation of main operations of device.
+ */
+
 #include <io.hpp>
 #include <log.hpp>
 #include <ntfs/device.hpp>

@@ -1,5 +1,10 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+/*
+ * Type helpers.
+ * We cannot have intX_t because it conflicts with STL.
+ */
+
 #pragma once
 
 typedef unsigned long uint64_t;

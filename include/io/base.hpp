@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+/*
+ * Abstract class for IO API.
+ */
+
 #pragma once
 
 #include <fstream>

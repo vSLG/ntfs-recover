@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+/*
+ * Program defined exceptions.
+ */
+
 #pragma once
 
 #include <stdexcept>

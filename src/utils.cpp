@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+/*
+ * Misc. helpers.
+ */
+
 #include <chrono>
 #include <cstdarg>
 #include <cstring>

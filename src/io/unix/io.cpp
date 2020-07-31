@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+/*
+ * Implementation for IO operations on an UNIX system.
+ */
+
 #include <cstring>
 #include <fcntl.h>
 #include <filesystem>
