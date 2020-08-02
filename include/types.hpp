@@ -9,6 +9,7 @@
 
 typedef unsigned long uint64_t;
 typedef signed long   sint64_t;
+typedef long          int64_t;
 
 typedef unsigned int uint32_t;
 typedef signed int   sint32_t;

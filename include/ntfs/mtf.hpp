@@ -12,7 +12,7 @@ namespace nf::NTFS {
 /*
  * MTF attribute kind.
  */
-enum mtf_attr_kind {
+typedef enum mtf_attr_kind {
     ATTR_STD_INFO        = 0x10,       // $STANDARD_INFORMATION
     ATTR_LIST            = 0x20,       // $ATTRIBUTE_LIST
     ATTR_FILE_NAME       = 0x30,       // $FILE_NAME
@@ -30,16 +30,17 @@ enum mtf_attr_kind {
     ATTR_PROP_SET        = 0xf0,       // $PROPERTY_SET
     ATTR_LOG_UTIL_STREAM = 0x100,      // $LOGGED_UTILITY_STREAM
     ATTR_END             = 0xffffffff, // End mark of MTF attributes.
-};
+} mtf_attr_kind_t;
 
 /*
- * MTF attribute flag
+ * MTF attribute flag (2 bytes)
  */
-enum mtf_attr_flag {
+typedef enum __attribute__((__packed__)) mtf_attr_flag {
+    ATTR_NORMAL     = 0x0000, // None of the below
     ATTR_COMPRESSED = 0x0001, // Attribute is compressed
     ATTR_ENCRYPTED  = 0x4000, // Attribute is encrypted
     ATTR_SPARSE     = 0x8000, // Attribute is sparse
-};
+} mtf_attr_flag_t;
 
 /*
  * MTF record header.
@@ -66,15 +67,15 @@ static_assert(sizeof(mtf_header_t) == 56);
  * MTF attribute header.
  */
 typedef struct __attribute__((__packed__)) mtf_attr_header {
-    mtf_attr_kind kind;    // Kind of attribute
-    uint32_t      len;     // Length of attribute. Determines the next attribute
+    mtf_attr_kind_t kind;  // Kind of attribute
+    uint32_t        len;   // Length of attribute. Determines the next attribute
                            // location
     uint8_t  non_resident; // Is set if attribute content is outside MTF record
     uint8_t  name_len;     // Length of the name
     uint16_t name_offset;  // Offset to name, if name_len != 0. Name data is
                            // stored in unicode
-    mtf_attr_flag flags;   // Tells if data is compressed, encrypted or sparse
-    uint16_t      id;      // Attribute ID. It must be unique in this MTF record
+    mtf_attr_flag_t flags; // Tells if data is compressed, encrypted or sparse
+    uint16_t        id;    // Attribute ID. It must be unique in this MTF record
 
     union __attribute__((__packed__)) {
         // Resident attribute
@@ -86,12 +87,12 @@ typedef struct __attribute__((__packed__)) mtf_attr_header {
 
         // Non resident attribute
         struct __attribute__((__packed__)) {
-            sint64_t low_vcn;  // Lowest virtual cluster number used. Only has a
+            int64_t low_vcn;   // Lowest virtual cluster number used. Only has a
                                // value if attribute type is $ATTRIBUTE_LIST
-            sint64_t high_vcn; // Highest virtual cluster number used
+            int64_t  high_vcn; // Highest virtual cluster number used
             uint16_t runlist_offset;   // Offset to runlist
-            uint16_t compression_unit; // Used compression unit size
-            uint8_t  unused[4];
+            uint8_t  compression_unit; // Used compression unit size
+            uint8_t  unused[5];
             uint64_t alloc_bytes;   // Allocated size in disk
             uint64_t content_bytes; // Actual size of the content, regardless if
                                     // it's compressed or not
@@ -101,5 +102,5 @@ typedef struct __attribute__((__packed__)) mtf_attr_header {
         static_assert(sizeof(non_resident) == 56);
     } data;
 } mtf_attr_header_t;
-static_assert(sizeof(mtf_attr_header_t) == 74);
+static_assert(sizeof(mtf_attr_header_t) == 72);
 } // namespace nf::NTFS
