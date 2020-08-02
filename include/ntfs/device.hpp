@@ -3,7 +3,7 @@
 #pragma once
 
 #include <io.hpp>
-#include <ntfs/layout.hpp>
+#include <ntfs/bootsector.hpp>
 
 namespace nf::NTFS {
 class Device {

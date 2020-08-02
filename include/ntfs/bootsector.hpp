@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+/*
+ * NTFS boot sector related structs and classes.
+ */
+
 #pragma once
 
 #include <types.hpp>
 
 namespace nf::NTFS {
-
 #define NTFSMagic "NTFS    "
 
 /*

@@ -6,8 +6,8 @@
 
 #include <io.hpp>
 #include <log.hpp>
+#include <ntfs/bootsector.hpp>
 #include <ntfs/device.hpp>
-#include <ntfs/layout.hpp>
 
 using namespace nf::NTFS;
 
