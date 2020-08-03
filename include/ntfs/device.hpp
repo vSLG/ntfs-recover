@@ -20,8 +20,9 @@ class Device {
 
     int   open(IOBase::OpenMode mode = IOBase::OpenMode::READ);
     int   close();
-    char *read(uint32_t size);
-    char *read_sectors(uint32_t quant = 1);
+    char *read(uint32_t size, uint32_t offset);
+    char *read_sectors(uint32_t quant = 1, uint32_t offset = 0);
+    char *read_clusters(uint32_t quant = 1, uint32_t offset = 0);
     int   load_header();
 
     void dump_part_bootsector(FILE *stream = stdout);

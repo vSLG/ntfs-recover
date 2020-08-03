@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 /*
- * MTF attributes related structs and classes.
+ * MTF attributes related structs.
  */
 
 #pragma once
 
-#include <ntfs/mtf.hpp>
 #include <types.hpp>
+
+#include <ntfs/mtf_header.hpp>
 
 namespace nf::NTFS {
 /*
@@ -101,7 +102,7 @@ typedef enum __attribute__((__packed__)) file_namespace {
     FILE_NAME_WIN32_AND_DOS = 0x03, // Supports both WIN32 and DOS namespaces
 } file_namespace_t;
 
-/**
+/*
  * $FILE_NAME struct.
  * NOTE: Fields are only updated when file name is changed, except for
  *       parent_directory
@@ -122,4 +123,6 @@ typedef struct __attribute__((__packed__)) mtf_file_name {
     wchar_t          name[];        // UTF-16 file name
 } mtf_file_name_t;
 static_assert(sizeof(mtf_file_name_t) == 66);
+
+template <typename T = mtf_std_info_t> class Content {};
 } // namespace nf::NTFS

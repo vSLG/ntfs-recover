@@ -4,6 +4,7 @@
  * Implementation of main operations of device.
  */
 
+#include <cstdio>
 #include <io.hpp>
 #include <log.hpp>
 #include <ntfs/bootsector.hpp>
@@ -42,9 +43,12 @@ int Device::close() {
 /*
  * Read `size` bytes from disk.
  */
-char *Device::read(uint32_t size) {
+char *Device::read(uint32_t size, uint32_t offset) {
     if (!this->_dev)
         return nullptr;
+
+    if (offset)
+        fseeko64(this->_dev, offset, SEEK_SET);
 
     char *buf = (char *) malloc(size);
 
@@ -55,8 +59,15 @@ char *Device::read(uint32_t size) {
 /*
  * Read `quant` sectors from disk.
  */
-char *Device::read_sectors(uint32_t quant) {
-    return this->read(quant * this->nbs->bpb.bps);
+char *Device::read_sectors(uint32_t quant, uint32_t offset) {
+    return this->read(quant * this->bpb->bps, offset * this->bpb->bps);
+}
+
+/*
+ * Read `quant` clusters from disk.
+ */
+char *Device::read_clusters(uint32_t quant, uint32_t offset) {
+    return this->read_sectors(quant * this->bpb->spc, offset * this->bpb->spc);
 }
 
 /*
