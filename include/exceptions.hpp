@@ -6,8 +6,12 @@
 
 #pragma once
 
+#include <errno.h>
 #include <stdexcept>
+#include <string.h>
 #include <string>
+
+#include <utils.hpp>
 
 namespace nf::exception {
 class NTFSException : public std::runtime_error {
@@ -40,7 +44,21 @@ class OpenException : public IOException {
 class ReadException : public IOException {
   public:
     explicit ReadException(uint16_t sector)
-        : IOException("could not read sector " + sector){};
+        : IOException(Utils::format("could not read sector %u", sector)){};
 };
 } // namespace IO
+
+namespace MTF {
+class MTFException : public NTFSException {
+  public:
+    explicit MTFException(const std::string &what)
+        : NTFSException(what, "MTF Error"){};
+};
+
+class InvalidMTFException : public MTFException {
+  public:
+    explicit InvalidMTFException(uint64_t id)
+        : MTFException(Utils::format("Invalid MTF entry: 0x%.16x", id)){};
+};
+} // namespace MTF
 }; // namespace nf::exception

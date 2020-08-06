@@ -43,23 +43,32 @@ typedef enum __attribute__((__packed__)) mtf_attr_flag {
 } mtf_attr_flag_t;
 
 /*
+ * MTF entry flag
+ */
+typedef enum __attribute__((__packed__)) mtf_entry_flag {
+    ENTRY_IN_USE    = 0x01,
+    ENTRY_DIRECTORY = 0x02,
+    ENTRY_MASK      = 0x03,
+} mtf_entry_flag_t;
+
+/*
  * MTF record header.
  */
 typedef struct __attribute__((__packed__)) mtf_header {
-    char     magic[4];      // magic number "FILE"
-    uint16_t uso;           // update sequence offset
-    uint16_t usl;           // update sequense length
-    uint64_t lsn;           // log file sequence number
-    uint16_t rsn;           // record sequence number
-    uint16_t hlc;           // hard link count
-    uint16_t attr_off;      // attributes offset
-    uint16_t flags;         // flags
-    uint32_t bytes_used;    // bytes in use
-    uint32_t bytes_alloc;   // bytes allocated
-    uint64_t parent_rec;    // parent record
-    uint32_t next_attr_idx; // next attribute index
-    uint32_t rv1;           // reserved
-    uint64_t rec_number;    // record number
+    char     magic[4];      // magic number "FILE"      0
+    uint16_t uso;           // update sequence offset   4
+    uint16_t usc;           // update sequence count    6
+    uint64_t lsn;           // log file sequence number 8
+    uint16_t rsn;           // record sequence number   16
+    uint16_t hlc;           // hard link count          18
+    uint16_t attr_off;      // attributes offset        20
+    uint16_t flags;         // flags                    22
+    uint32_t bytes_used;    // bytes in use             24
+    uint32_t bytes_alloc;   // bytes allocated          28
+    uint64_t parent_rec;    // parent record            32
+    uint32_t next_attr_idx; // next attribute index     40
+    uint32_t rv1;           // reserved                 44
+    uint64_t rec_number;    // record number            48
 } mtf_header_t;
 static_assert(sizeof(mtf_header_t) == 56);
 

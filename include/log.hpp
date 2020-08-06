@@ -71,15 +71,16 @@ template <typename OutputPolicy> Logger<OutputPolicy>::~Logger() {
 
 typedef Logger<StreamPolicy> log;
 
-#define LOG(level)                                                           \
-    if (level < Log::log::reporting_level() || !Log::StreamPolicy::stream()) \
-        ;                                                                    \
-    else                                                                     \
-        Log::log().get(level)
+#define LOG(level)                                 \
+    if (level < nf::Log::log::reporting_level() || \
+        !nf::Log::StreamPolicy::stream())          \
+        ;                                          \
+    else                                           \
+        nf::Log::log().get(level)
 
-#define D LOG(Log::DEBUG)
-#define I LOG(Log::INFO)
-#define W LOG(Log::WARNING)
-#define E LOG(Log::ERROR) << "(" << __FILE__ << ":" << __LINE__ << ") "
-#define C LOG(Log::CRITICAL) << "(" << __FILE__ << ":" << __LINE__ << ") "
+#define D LOG(nf::Log::DEBUG)
+#define I LOG(nf::Log::INFO)
+#define W LOG(nf::Log::WARNING)
+#define E LOG(nf::Log::ERROR) << "(" << __FILE__ << ":" << __LINE__ << ") "
+#define C LOG(nf::Log::CRITICAL) << "(" << __FILE__ << ":" << __LINE__ << ") "
 } // namespace nf::Log

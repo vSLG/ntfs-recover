@@ -47,5 +47,6 @@ class Device {
     // Getters and setters
     std::string dev_path();
     uint16_t    sector_size();
+    uint32_t    mtf_size();
 };
 } // namespace nf::NTFS

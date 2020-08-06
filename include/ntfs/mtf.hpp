@@ -17,7 +17,7 @@ using namespace nf::NTFS;
 class MTFAttribute {
   public:
     MTFAttribute(const char *data, Device *dev);
-    ~MTFAttribute();
+    //~MTFAttribute();
 
     // Read n clusters from content. If end reached, stop
     char *read_content(uint32_t clusters = 1);
@@ -51,8 +51,8 @@ class MTFAttribute {
  */
 class MTFEntry {
   public:
-    MTFEntry(const char *data, Device *dev);
-    ~MTFEntry();
+    MTFEntry(char *data, Device *dev);
+    //~MTFEntry();
 
     // Check if entry is a valid one
     static int check_header(MTFEntry entry);

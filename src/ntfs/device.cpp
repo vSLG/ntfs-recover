@@ -4,7 +4,8 @@
  * Implementation of main operations of device.
  */
 
-#include <cstdio>
+#include <cmath>
+
 #include <io.hpp>
 #include <log.hpp>
 #include <ntfs/bootsector.hpp>
@@ -117,6 +118,9 @@ void Device::dump_part_bootsector(FILE *stream) {
         stream, "\tTotal clusters:\t %lu\n", this->bpb->ts / this->bpb->spc);
     fprintf(stream, "\t$MTF cluster:\t 0x%.8lx\n", this->ntfs_header->mtf);
     fprintf(stream, "\t$MTFmir cluster: 0x%.8lx\n", this->ntfs_header->mtf2);
+    fprintf(stream,
+            "\tMTF entry size:  %s\n",
+            Utils::b2h(this->mtf_size()).c_str());
 }
 
 // Getters and setters
@@ -127,4 +131,11 @@ std::string Device::dev_path() {
 
 uint16_t Device::sector_size() {
     return this->nbs->bpb.bps;
+}
+
+uint32_t Device::mtf_size() {
+    if ((uint16_t) this->ntfs_header->cpr < 0x7f)
+        return (uint32_t) pow(2, -((int) this->ntfs_header->cpib));
+    else
+        return (uint32_t) pow(2, -((int) this->ntfs_header->cpr));
 }
