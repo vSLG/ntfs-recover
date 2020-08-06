@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
     mtf_header_t *header = (mtf_header_t *) data;
     MTFEntry(data, dev);
 
-    I << "Magic:        " << header->magic;
+    /* I << "Magic:        " << header->magic;
     I << "Fixup offset: " << header->uso;
     I << "Fixup count:  " << header->usc;
 
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     I << Utils::format("Flags:                          0x%.2x", header->flags);
     I << "Used bytes for this entry:      " << header->bytes_used;
     I << "Bytes allocated for this entry: " << header->bytes_alloc;
-    I << "Entry id: " << Utils::format("%.32x", header->rec_number);
+    I << "Entry id: " << Utils::format("%.32x", header->rec_number); */
 
     return 0;
 }

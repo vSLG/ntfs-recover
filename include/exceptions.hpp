@@ -57,8 +57,15 @@ class MTFException : public NTFSException {
 
 class InvalidMTFException : public MTFException {
   public:
-    explicit InvalidMTFException(uint64_t id)
+    explicit InvalidMTFException(uint64_t id = 0)
         : MTFException(Utils::format("Invalid MTF entry: 0x%.16x", id)){};
+};
+
+class InvalidMTFAttrException : public MTFException {
+  public:
+    explicit InvalidMTFAttrException(uint32_t type = 0)
+        : MTFException(
+              Utils::format("Invalid MTF attribute type: 0x%.8x", type)){};
 };
 } // namespace MTF
 }; // namespace nf::exception

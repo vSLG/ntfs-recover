@@ -16,7 +16,7 @@ using namespace nf::NTFS;
  */
 class MTFAttribute {
   public:
-    MTFAttribute(const char *data, Device *dev);
+    MTFAttribute(char *data, Device *dev);
     //~MTFAttribute();
 
     // Read n clusters from content. If end reached, stop
@@ -35,8 +35,11 @@ class MTFAttribute {
     // Size in bytes of content
     uint32_t content_size();
 
+    // Size in bytes of attribute
+    uint32_t size();
+
     // Name of attribute
-    std::string name;
+    std::string name();
 
   private:
     mtf_attr_header_t *_header;
@@ -72,5 +75,5 @@ class MTFEntry {
     mtf_header_t *_header;
     Device *      _dev;
 
-    std::vector<MTFAttribute> _attrs;
+    std::vector<MTFAttribute *> _attrs;
 };

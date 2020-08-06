@@ -32,14 +32,61 @@ MTFEntry::MTFEntry(char *data, Device *dev) : _dev(dev) {
         header->bytes_used > dev->mtf_size())
         throw err::InvalidMTFException(header->rec_number);
 
-    // uint16_t current_offset = header->attr_off;
+    uint16_t current_offset = header->attr_off;
 
-    // while ((uint32_t) data[current_offset] != 0xffffffff) {}
+    while ((uint32_t) data[current_offset] != ATTR_END) {
+        MTFAttribute *attr = new MTFAttribute(data + current_offset, dev);
+        current_offset += attr->size();
+        this->_attrs.push_back(attr);
+
+        if (current_offset > dev->mtf_size())
+            throw err::InvalidMTFException(header->rec_number);
+    }
 
     this->_header = header;
     this->_data   = data;
     D << "MTF entry OK";
 }
 
-MTFAttribute::MTFAttribute(const char *data, Device *dev) : _dev(dev) {
+MTFAttribute::MTFAttribute(char *data, Device *dev) : _dev(dev) {
+    mtf_attr_header_t *header = (mtf_attr_header_t *) data;
+
+    // Is this attribute type valid?
+    if ((header->kind == 0) || !(header->kind & ATTR_MASK) ||
+        ((header->kind % 0x10 != 0) && (header->kind != ATTR_END)))
+        throw err::InvalidMTFAttrException(header->kind);
+
+    // Is non_resident set to anything else than 0 or 1?
+    if (header->non_resident & 0xfe)
+        throw err::InvalidMTFAttrException(header->kind);
+
+    // Are the flags valid?
+    if (!(header->flags & ATTR_FLAG_MASK) && (header->flags != 0))
+        throw err::InvalidMTFAttrException(header->kind);
+
+    // Is the size right?
+    if (header->len == 0 ||
+        header->len > dev->mtf_size() - sizeof(mtf_attr_header_t))
+        throw err::InvalidMTFAttrException(header->kind);
+
+    // Check resident fields
+    if (!(header->non_resident)) {
+        // Is content within bounds?
+        if (header->data.resident.content_len +
+                header->data.resident.content_offset >
+            header->len)
+            throw err::InvalidMTFAttrException(header->kind);
+    } /* Check non-resident fields */ else {
+        // TODO
+    }
+
+    this->_header = header;
+}
+
+uint32_t MTFAttribute::size() {
+    return this->_header->len;
+}
+
+mtf_attr_kind_t MTFAttribute::type() {
+    return this->_header->kind;
 }

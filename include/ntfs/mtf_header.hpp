@@ -29,6 +29,7 @@ typedef enum mtf_attr_kind {
     ATTR_EA              = 0xe0,       // $EA
     ATTR_PROP_SET        = 0xf0,       // $PROPERTY_SET
     ATTR_LOG_UTIL_STREAM = 0x100,      // $LOGGED_UTILITY_STREAM
+    ATTR_MASK            = 0x1f0,      // Mask valid values
     ATTR_END             = 0xffffffff, // End mark of MTF attributes.
 } mtf_attr_kind_t;
 
@@ -36,10 +37,10 @@ typedef enum mtf_attr_kind {
  * MTF attribute flag (2 bytes)
  */
 typedef enum __attribute__((__packed__)) mtf_attr_flag {
-    ATTR_NORMAL     = 0x0000, // None of the below
     ATTR_COMPRESSED = 0x0001, // Attribute is compressed
     ATTR_ENCRYPTED  = 0x4000, // Attribute is encrypted
     ATTR_SPARSE     = 0x8000, // Attribute is sparse
+    ATTR_FLAG_MASK  = 0xc001,
 } mtf_attr_flag_t;
 
 /*
